@@ -3,8 +3,7 @@ function draw() {
   var tens = number / 10;
   var ones = number % 10;
 
-  $("#ones .led").removeClass("on");
-  $("#tens .led").removeClass("on");
+  $(".led").removeClass("on");
 
   if (ones & 8) $("#ones .8").addClass("on");
   if (ones & 4) $("#ones .4").addClass("on");
@@ -16,10 +15,14 @@ function draw() {
   if (tens & 2) $("#tens .2").addClass("on");
   if (tens & 1) $("#tens .1").addClass("on");
 
+  if (g_minutes)
+    $(".minsec.led").addClass("on");
+
   $("#human").html(number);
 }
 
 var g_num = 60;
+var g_minutes = false;
 
 draw();
 
@@ -30,6 +33,20 @@ $("button#up").on("click", function() {
 
 $("button#down").on("click", function() {
   g_num--;
+  if (g_num < 1) g_num = 1;
+  draw();
+});
+
+$("button#minsec").on("click", function() {
+  g_minutes = !g_minutes;
+
+  if (g_minutes)
+    g_num /= 60;
+  else
+    g_num *= 60;
+
+  g_num = Math.round(g_num);
+
   draw();
 });
 
@@ -46,6 +63,11 @@ $("button#startstop").on("click", function() {
 
 function start() {
   g_initial = g_num;
+
+  var interval = 1000;
+  if (g_minutes)
+    interval *= 60;
+
   g_timer = setInterval(function() {
     g_num -= 1;
     draw();
@@ -55,7 +77,7 @@ function start() {
       reset();
       draw();
     }
-  }, 1000);
+  }, interval);
   g_running = true;
 }
 function stop() {
